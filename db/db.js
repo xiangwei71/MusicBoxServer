@@ -33,11 +33,11 @@ const db={
             record = await dbOperation(queryMap,todoFun)
         } catch(e){
             console.log(e.stack)
-            record = this.Query_Error
+            record = db.Query_Error
         }
     
         if(record==null)
-            record = db.Query_Error
+            record = errorMsg
         
         return record
     }

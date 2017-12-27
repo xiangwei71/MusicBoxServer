@@ -3,6 +3,7 @@ const Router = require('koa-router');
 const bodyParser = require('koa-bodyparser');
 const users = require('./db/users');
 const lists = require('./db/lists');
+const musics = require('./db/musics');
 
 const app = new Koa();
 const router = new Router();
@@ -17,6 +18,7 @@ router.get("/",async (ctx,next)=>{
 app.use(router.routes())
 app.use(users.getRouter().routes())
 app.use(lists.getRouter().routes())
+app.use(musics.getRouter().routes())
 
 app.listen(3001,()=>{
     console.log("server starting on "+3001);

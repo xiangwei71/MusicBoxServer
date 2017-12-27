@@ -6,46 +6,53 @@ const router = new Router();
 router.post("/Lists/user_create_a_list/",async (ctx,next)=>{
     ctx.body =await db.OneResponse(
         ctx.request.body,
-        lists.user_create_a_list,
+        pack.user_create_a_list,
         'NOT SUCCESS:user_create_a_list')
 })
 
 router.post("/Lists/user_ref_a_list/",async (ctx,next)=>{
     ctx.body =await db.OneResponse(
         ctx.request.body,
-        lists.user_ref_a_list,
+        pack.user_ref_a_list,
         'NOT SUCCESS:user_ref_a_list')
 })
 
-router.post("/Lists/user_add_a_owner/",async (ctx,next)=>{
+router.post("/Lists/user_add_a_list_owner/",async (ctx,next)=>{
     ctx.body =await db.OneResponse(
         ctx.request.body,
-        lists.user_add_a_owner,
-        'NOT SUCCESS:user_add_a_owner')
+        pack.user_add_a_list_owner,
+        'NOT SUCCESS:user_add_a_list_owner')
 })
 
 router.post("/Lists/user_exit_a_list/",async (ctx,next)=>{
     ctx.body =await db.OneResponse(
         ctx.request.body,
-        lists.user_exit_a_list,
+        pack.user_exit_a_list,
         'NOT SUCCESS:user_exit_a_list')
 })
 
 router.post("/Lists/user_delete_a_ref_list/",async (ctx,next)=>{
     ctx.body =await db.OneResponse(
         ctx.request.body,
-        lists.user_delete_a_ref_list,
+        pack.user_delete_a_ref_list,
         'NOT SUCCESS:user_delete_a_ref_list')
 })
 
 router.post("/Lists/get_all_list_of_this_user/",async (ctx,next)=>{
     ctx.body =await db.OneResponse(
         ctx.request.body,
-        lists.get_all_list_of_this_user,
+        pack.get_all_list_of_this_user,
         'NOT SUCCESS:get_all_list_of_this_user')
 })
 
-const lists ={
+router.post("/Lists/get_list_owner/",async (ctx,next)=>{
+    ctx.body =await db.OneResponse(
+        ctx.request.body,
+        pack.get_list_owner,
+        'NOT SUCCESS:get_list_owner')
+})
+
+const pack ={
     getRouter:function (){
         return router
     },
@@ -60,7 +67,7 @@ const lists ={
             queryMap.userid, queryMap.listid, true)
     },
 
-    user_add_a_owner: async function (client,queryMap){
+    user_add_a_list_owner: async function (client,queryMap){
         return await add_relation_userlist(client, 
             queryMap.userid, queryMap.listid, false)
     },
@@ -81,7 +88,12 @@ const lists ={
             queryMap.userid)
     },
 
-    //(1)找出所有的Music
+    get_list_owner: async function (client,queryMap){
+        return await get_list_owner(client, 
+            queryMap.listid)
+    },
+
+    //(1)刪除list裡的所有的Music
     //For each Music in List{
     //  if (Music不是ref and 沒有其他協作者)｛
     //      如果有其他List加入這首Music，需要從其他List移除對這首Music的ref
@@ -89,7 +101,7 @@ const lists ={
     //  ｝
     //}
     //    
-    //(2)移除該List所記錄的所有Music
+    //(2)移除List所有的關注Music
     //    
     //(3)找出ref該List的所有User(並從這些User裡移除該List)
     //(4)刪除該List實體
@@ -97,7 +109,7 @@ const lists ={
 
     },
 }
-module.exports = lists
+module.exports = pack
 
 async function add_relation_userlist(client, userid, listid, isref){
     let {rowCount} = await client.query("select 1 from userlist where userid = $1 and listid = $2",
@@ -141,7 +153,13 @@ async function user_create_a_list(client, userid, listname, description, ispubli
 }
 
 async function get_all_list_of_this_user(client, userid) {
-    let res = await client.query("select lists.id, listname, description FROM userlist,lists where userlist.listid = lists.id and userid = $1",
+    let res = await client.query("select lists.id, listname, description, isref FROM userlist,lists where userlist.listid = lists.id and userid = $1",
      [userid])
+    return  (res.rowCount>0)?res.rows:[]
+}
+
+async function get_list_owner(client, listid) {
+    let res = await client.query("select userid FROM userlist where listid = $1 and isref = false",
+     [listid])
     return  (res.rowCount>0)?res.rows:[]
 }

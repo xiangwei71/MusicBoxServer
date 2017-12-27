@@ -11,32 +11,32 @@ const router = new Router();
 router.post("/Users/get/",async (ctx,next)=>{
     ctx.body =await db.OneResponse(
         ctx.request.body,
-        users.get_user,
+        pack.get_user,
         Get_Not_Success)
 })
 
 router.post("/Users/create/",async (ctx,next)=>{
     ctx.body = await db.OneResponse(
         ctx.request.body,
-        users.create_user,
+        pack.create_user,
         Post_Not_Success)
 })
 
 router.post("/Users/update/",async (ctx,next)=>{
     ctx.body = await db.OneResponse(
         ctx.request.body,
-        users.update_user,
+        pack.update_user,
         Put_Not_Success)
 })
 
 router.post("/Users/delete/",async (ctx,next)=>{
     ctx.body = await db.OneResponse(
         ctx.request.body,
-        users.delete_user,
+        pack.delete_user,
         Delete_Not_Success)
 })
 
-const users ={
+const pack ={
     getRouter:function (){
         return router
     },
@@ -61,7 +61,7 @@ const users ={
         return await delete_user(client, queryMap.userid);
     }
 }
-module.exports = users
+module.exports = pack
 
 async function get_user(client, userid){
     let res = await client.query('SELECT * FROM users WHERE userid = $1',

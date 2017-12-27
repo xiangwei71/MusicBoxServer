@@ -1,66 +1,90 @@
 const Router = require('koa-router');
 const db = require('./db');
 
+const Get_Not_Success = 'Get_Not_Success'
+const Post_Not_Success = 'Post_Not_Success'
+const Put_Not_Success = 'Put_Not_Success'
+const Delete_Not_Success = 'Delete_Not_Success'
+
 const router = new Router();
 
-//get方法不會送出body
-router.get("/Users/:id",async (ctx,next)=>{
+router.post("/Users/get/",async (ctx,next)=>{
     ctx.body =await db.OneResponse(
-        {userid:ctx.params.id},
-        users.get,
-        db.Get_Not_Success)
+        ctx.request.body,
+        users.get_user,
+        Get_Not_Success)
 })
 
-router.post("/Users/",async (ctx,next)=>{
+router.post("/Users/create/",async (ctx,next)=>{
     ctx.body = await db.OneResponse(
         ctx.request.body,
-        users.post,
-        db.Post_Not_Success)
+        users.create_user,
+        Post_Not_Success)
 })
 
-router.put("/Users/:id",async (ctx,next)=>{
+router.post("/Users/update/",async (ctx,next)=>{
     ctx.body = await db.OneResponse(
         ctx.request.body,
-        users.put,
-        db.Put_Not_Success)
+        users.update_user,
+        Put_Not_Success)
 })
 
-router.delete("/Users/:id",async (ctx,next)=>{
+router.post("/Users/delete/",async (ctx,next)=>{
     ctx.body = await db.OneResponse(
-        {userid:ctx.params.id},
-        users.delete,
-        db.Delete_Not_Success)
+        ctx.request.body,
+        users.delete_user,
+        Delete_Not_Success)
 })
 
 const users ={
-    get: async function (queryMap,client){
-        let res = await client.query('SELECT * FROM users WHERE userid = $1', [queryMap.userid])
-        return  (res.rowCount===1)?res.rows[0]:null
-    },
-    
-    post:async function (queryMap,client){
-        let record = await users.get(queryMap,client);
-        if(record==null){
-            let res = await client.query("INSERT INTO users (userid, pwd) VALUES ($1,$2) RETURNING userid,pwd", [queryMap.userid,queryMap.pwd])
-            return  (res.rowCount===1)?res.rows[0]:null
-        }
-    
-        return null;
-    },
-    
-    put:async function (queryMap,client){
-        let res = await client.query("UPDATE users SET pwd = $2 WHERE userid = $1 RETURNING userid", [queryMap.userid,queryMap.pwd])
-        return  (res.rowCount===1)?res.rows[0]:null
-    },
-    
-    delete:async function (queryMap,client){
-        let res = await client.query("DELETE FROM users WHERE userid = $1 RETURNING userid", [queryMap.userid])
-        return  (res.rowCount===1)?res.rows[0]:null
-    },
-
     getRouter:function (){
         return router
+    },
+
+    get_user: async function (client, queryMap){
+        return await get_user(client, queryMap.userid)
+    },
+    
+    create_user: async function (client, queryMap){
+        let record = await get_user(client,queryMap.userid);
+        if(record!=null)//user已經存在
+            return null
+    
+        return create_user(client,queryMap.userid,queryMap.pwd)
+    },
+    
+    update_user: async function(client, queryMap){
+        return await update_user(client, queryMap.userid, queryMap.pwd);
+    },
+    
+    delete_user: async function(client, queryMap){
+        return await delete_user(client, queryMap.userid);
     }
 }
-
 module.exports = users
+
+async function get_user(client, userid){
+    let res = await client.query('SELECT * FROM users WHERE userid = $1',
+     [userid])
+    return  (res.rowCount===1)?res.rows[0]:null
+}
+
+async function create_user(client, userid, pwd){
+    let res = await client.query("INSERT INTO users (userid, pwd) VALUES ($1,$2) RETURNING userid",
+     [userid, pwd])
+    return  (res.rowCount===1)?res.rows[0]:null
+}
+
+async function update_user(client, userid, pwd){
+    let res = await client.query("UPDATE users SET pwd = $2 WHERE userid = $1 RETURNING userid",
+     [userid, pwd])
+    return  (res.rowCount===1)?res.rows[0]:null
+}
+
+//(1)取得所有的清單
+//(2)刪除所有的清單
+async function delete_user(client, userid){
+    let res = await client.query("DELETE FROM users WHERE userid = $1 RETURNING userid",
+     [userid])
+    return  (res.rowCount===1)?res.rows[0]:null
+}

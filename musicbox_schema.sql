@@ -2,7 +2,10 @@ CREATE TABLE lists (
    id serial primary key,
    listname character varying(50) NOT NULL,
    description character varying(100) NOT NULL,
-   ispublic boolean NOT NULL
+   ispublic boolean DEFAULT true NOT NULL,
+
+   refcount integer DEFAULT 0 NOT NULL,
+   createtime timestamp DEFAULT current_timestamp
 );
 
 --設成ispublic，就可以被ref(加入)
@@ -10,8 +13,11 @@ CREATE TABLE musics (
    id serial primary key,
    musicname character varying(50) NOT NULL,
    description character varying(100) NOT NULL,
-   ispublic boolean NOT NULL,
-   movable boolean NOT NULL
+
+   ispublic boolean DEFAULT true NOT NULL,
+   voterscount integer DEFAULT 0  NOT NULL,
+   averagestart integer DEFAULT 0 NOT NULL,
+   createtime timestamp DEFAULT current_timestamp
 );
 
 CREATE TABLE users (
@@ -36,6 +42,9 @@ CREATE TABLE subreplys (
 
 --多對多關聯
 
+-- isref = false 即是擁有者
+-- 全部清單: userid != 自己 and ispublic = true and isref = false 
+--然後前端要過濾掉和自己共同的list(先傳一分自己的清單到Client)
 CREATE TABLE userlist (
    id serial primary key,
    userid character varying(100) references users(userid),
@@ -43,6 +52,8 @@ CREATE TABLE userlist (
    isref boolean DEFAULT false NOT NULL
 );
 
+--全部音樂: userid!= 自己 and ispublic = true
+--然後前端要過濾掉和自己共同創作的music(先傳一分自己的清單到Client)
 CREATE TABLE usermusic (
    id serial primary key,
    userid character varying(100) references users(userid),
@@ -56,11 +67,12 @@ CREATE TABLE listmusic (
    isref boolean DEFAULT false NOT NULL
 );
 
-CREATE TABLE listowner (
-   id serial primary key,
-   userid character varying(100) references users(userid),
-   listid integer references lists(id)
-);
+--看來不需要這張了
+--CREATE TABLE listowner (
+--   id serial primary key,
+--   userid character varying(100) references users(userid),
+--   listid integer references lists(id)
+--);
 
 
 

@@ -13,7 +13,7 @@ const pool = new Pool({
 async function dbOperation(queryMap,todoFun){
     const client = await pool.connect()
     try {
-        return await todoFun(queryMap,client)
+        return await todoFun(client,queryMap)
     } finally {
         client.release()
         //console.log("release")
@@ -21,10 +21,6 @@ async function dbOperation(queryMap,todoFun){
 }
 
 const db={
-    Get_Not_Success :'Get_Not_Success',
-    Post_Not_Success :'Post_Not_Success',
-    Put_Not_Success :'Put_Not_Success',
-    Delete_Not_Success :'Delete_Not_Success',
     Query_Error :'Query_Error',
 
     OneResponse:async function (queryMap,todoFun,errorMsg){
@@ -32,6 +28,7 @@ const db={
         try{
             record = await dbOperation(queryMap,todoFun)
         } catch(e){
+            console.log("[error]")
             console.log(e.stack)
             record = db.Query_Error
         }

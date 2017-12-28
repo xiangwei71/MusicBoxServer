@@ -82,10 +82,6 @@ router.post("/Musics/get_music_ref/",async (ctx,next)=>{
 })
 
 const pack ={
-    getRouter:function (){
-        return router
-    },
-
     create_music:async function(client,queryMap){
         return await create_music(client,
              queryMap.userid, queryMap.listid, queryMap.musicname, queryMap.description, queryMap.ispublic)
@@ -144,7 +140,21 @@ const pack ={
     //(1)修改ispublic需要多作什麼處理？
 
 }
-module.exports = pack
+
+const openPack = {
+    getRouter:function (){
+        return router
+    },
+
+    delete_music:async function(client, userid, musicid, useTransaction = true){
+        return await delete_music(client, userid, musicid, useTransaction)
+    },
+
+    user_delete_a_ref_music:async function(client, listid, musicid, useTransaction = true){
+        return await user_delete_a_ref_music(client, listid, musicid, useTransaction)
+    },
+}
+module.exports = openPack
 
 //(1)新增Music
 //(2)建立usermusic關聯

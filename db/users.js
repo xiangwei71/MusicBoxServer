@@ -36,11 +36,7 @@ router.post("/Users/delete/",async (ctx,next)=>{
         Delete_Not_Success)
 })
 
-const pack ={
-    getRouter:function (){
-        return router
-    },
-
+const packPack ={
     get_user: async function (client, queryMap){
         return await get_user(client, queryMap.userid)
     },
@@ -61,7 +57,13 @@ const pack ={
         return await delete_user(client, queryMap.userid);
     }
 }
-module.exports = pack
+
+const openPack = {
+    getRouter:function (){
+        return router
+    },
+}
+module.exports = openPack
 
 async function get_user(client, userid){
     let res = await client.query('SELECT * FROM users WHERE userid = $1',

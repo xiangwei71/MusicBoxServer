@@ -82,10 +82,6 @@ router.post("/Lists/user_delete_all_ref_list/",async (ctx,next)=>{
 })
 
 const pack ={
-    getRouter:function (){
-        return router
-    },
-    
     user_create_a_list: async function (client,queryMap){
         return await user_create_a_list(client,
              queryMap.userid, queryMap.listname, queryMap.description, queryMap.ispublic)
@@ -133,7 +129,7 @@ const pack ={
 
     delete_user_list: async function (client,queryMap){
         return await delete_user_list(client, 
-            queryMap.listid)
+            queryMap.userid,queryMap.listid)
     },
 
     is_no_music_in_this_list: async function (client,queryMap){
@@ -141,7 +137,13 @@ const pack ={
             queryMap.listid)
     },
 }
-module.exports = pack
+
+const openPack ={
+    getRouter:function (){
+        return router
+    },
+}
+module.exports = openPack
 
 async function user_ref_a_list(client, userid, listid, useTransaction = true){
     let {rowCount} = await client.query("select 1 from userlist where userid = $1 and listid = $2",
@@ -310,22 +312,62 @@ async function get_list_ref(client, listid) {
 //
 //(0)list有其他擁有者：中斷
 //(1)刪除list裡的所有Music(實體):delete_music
-//(2)移除List所有的Music(ref):
+//(2)移除List所有的Music(ref):user_delete_a_ref_music
 //(3)list是否已經清空？:is_no_music_in_this_list
-//  (1)刪除所有對這個list的關注:user_delete_all_ref_list
-//  (2)刪除該List實體:
-async function delete_user_list(client, listid) {
-    let refs =await get_list_owner(client, 
-        listid)
+//  (3-1)刪除所有對這個list的ref或是實體記錄:
+//  (3-2)刪除該List實體:
+async function delete_user_list(client, userid, listid, useTransaction = true) {
+    let refs =await get_list_owner(client, listid)
 
     if(refs.length >1){//(0)list有其他擁有者：中斷
         console.log('listid = %d, has another owner')
         return null
     }
 
-    let is_no_music = await is_no_music_in_this_list(client, listid)
-    if(!is_no_music)//(3)list是否已經清空？
-        return null
+    //找出所有的music實體
+    let res = await client.query("select musicid from listmusic where listid = $1 and isref = false",
+     [listid])
+    let music_entities = res.rows
+
+    res = await client.query("select musicid from listmusic where listid = $1 and isref = true",
+     [listid])
+     let music_refs = res.rows
+
+    try {
+        if(useTransaction)await client.query('BEGIN')
+
+        //(1)刪除list裡的所有Music(實體):delete_music
+        for(let i=0;i<music_entities.length;i++){
+            let musicid = music_entities[i].musicid
+            musics.delete_music(client,userid,musicid, false)
+        }
+            
+        //(2)移除List所有的Music(ref):
+        for(let i=0;i<music_refs.length;i++){
+            let musicid = music_refs[i].musicid
+            musics.user_delete_a_ref_music(client, listid, musicid, false)
+        }
+
+        let is_no_music = await is_no_music_in_this_list(client, listid)
+        console.log(is_no_music)
+        if(!is_no_music){//(3)list是否已經清空？
+
+            if(useTransaction)await client.query('COMMIT')
+            return 'listid = ' + listid + ' still has music entity !'
+        }
+            
+        //  (3-1)刪除所有對這個list的ref或是實體記錄:
+        await client.query("delete from userlist where listid = $1",[listid])
+        //  (3-2)刪除該List實體:
+        res =await client.query("delete from lists where id = $1 returning *",[listid])
+
+        if(useTransaction)await client.query('COMMIT')
+
+        return res.rows[0]
+    } catch (e) {
+        if(useTransaction)await client.query('ROLLBACK')
+        throw e
+    }
 }
 
 async function is_no_music_in_this_list(client, listid) {

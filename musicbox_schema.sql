@@ -4,8 +4,10 @@ CREATE TABLE lists (
    description character varying(100) NOT NULL,
    ispublic boolean DEFAULT true NOT NULL,
 
-   refcount integer DEFAULT 0 NOT NULL,
-   createtime timestamp DEFAULT current_timestamp
+   createtime timestamp DEFAULT current_timestamp,
+
+   ownercount integer DEFAULT 1 NOT NULL,
+   refcount integer DEFAULT 0 NOT NULL
 );
 
 --設成ispublic，就可以被ref(加入)
@@ -17,7 +19,10 @@ CREATE TABLE musics (
    ispublic boolean DEFAULT true NOT NULL,
    voterscount integer DEFAULT 0  NOT NULL,
    averagestart integer DEFAULT 0 NOT NULL,
-   createtime timestamp DEFAULT current_timestamp
+   createtime timestamp DEFAULT current_timestamp,
+
+   ownercount integer DEFAULT 1 NOT NULL,
+   refcount integer DEFAULT 0 NOT NULL
 );
 
 CREATE TABLE users (

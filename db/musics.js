@@ -24,6 +24,13 @@ router.post("/Musics/user_delete_a_ref_music/",async (ctx,next)=>{
         'NOT SUCCESS:user_delete_a_ref_music')
 })
 
+router.post("/Musics/user_delete_all_ref_music/",async (ctx,next)=>{
+    ctx.body =await db.OneResponse(
+        ctx.request.body,
+        pack.user_delete_all_ref_music,
+        'NOT SUCCESS:user_delete_all_ref_music')
+})
+
 router.post("/Musics/user_add_a_music_owner/",async (ctx,next)=>{
     ctx.body =await db.OneResponse(
         ctx.request.body,
@@ -92,6 +99,11 @@ const pack ={
     user_delete_a_ref_music:async function(client,queryMap){
         return await user_delete_a_ref_music(client, 
             queryMap.listid, queryMap.musicid)
+    },
+
+    user_delete_all_ref_music:async function(client,queryMap){
+        return await user_delete_all_ref_music(client, 
+            queryMap.musicid)
     },
 
     user_add_a_music_owner:async function(client,queryMap){
@@ -212,6 +224,33 @@ async function user_delete_a_ref_music(client, listid, musicid){
     }
 }
 
+//刪除所有對這個music的關注
+async function user_delete_all_ref_music(client, musicid){
+    try {
+        await client.query('BEGIN')
+
+        let {rows} = await client.query("select count(*) as refcount from listmusic where musicid = $1 and isref= true",
+         [musicid])
+
+        let refcount = parseInt(rows[0].refcount)//!!! 收到的是string
+        if(refcount===0)//不存在
+            return null
+            
+        res = await client.query("DELETE FROM listmusic WHERE musicid = $1 and isref = true",
+         [musicid])
+
+        res = await client.query("update musics SET refcount = refcount-$2 WHERE id = $1 returning *",
+         [musicid,refcount])
+        
+        await client.query('COMMIT')
+
+        return  (res.rowCount===1)?res.rows[0]:null
+    } catch (e) {
+        await client.query('ROLLBACK')
+        throw e
+    }
+}
+
 async function user_add_a_music_owner(client, userid, musicid){
     try{
         await client.query('BEGIN')
@@ -301,7 +340,7 @@ async function delete_music(client, userid, musicid) {
             return null 
         }
 
-        if(res.rows[0].ownercount!==1){//檢查是不是有其他owner
+        if(res.rows[0].ownercount!==1){//如果有多個作者無法刪除
             console.log('delete musicid = %d, but ownercount!=1',musicid)
             return null 
         }

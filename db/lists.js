@@ -348,14 +348,16 @@ async function delete_user_list(client, userid, listid, useTransaction = true) {
             musics.user_delete_a_ref_music(client, listid, musicid, false)
         }
 
-        let is_no_music = await is_no_music_in_this_list(client, listid)
-        console.log(is_no_music)
-        if(!is_no_music){//(3)list是否已經清空？
+        //到這裡算是刪除了所有music(ref和實體)
+        if(useTransaction)await client.query('COMMIT')
 
-            if(useTransaction)await client.query('COMMIT')
+        //!!! 如果沒有COMMIT，這裡select 還是會有資料
+        let is_no_music = await is_no_music_in_this_list(client, listid)
+        if(!is_no_music)//(3)list是否已經清空？
             return 'listid = ' + listid + ' still has music entity !'
-        }
-            
+        
+        if(useTransaction)await client.query('BEGIN')
+
         //  (3-1)刪除所有對這個list的ref或是實體記錄:
         await client.query("delete from userlist where listid = $1",[listid])
         //  (3-2)刪除該List實體:

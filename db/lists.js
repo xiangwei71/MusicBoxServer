@@ -143,15 +143,15 @@ const pack ={
 }
 module.exports = pack
 
-async function user_ref_a_list(client, userid, listid){
-    try {
-        await client.query('BEGIN')
-
-        let {rowCount} = await client.query("select 1 from userlist where userid = $1 and listid = $2",
+async function user_ref_a_list(client, userid, listid, useTransaction = true){
+    let {rowCount} = await client.query("select 1 from userlist where userid = $1 and listid = $2",
          [userid, listid])
 
-        if(rowCount==1)//已經存在了
-            return null
+    if(rowCount==1)//已經存在了
+        return null
+
+    try {
+        if(useTransaction)await client.query('BEGIN')
 
         let res = await client.query("INSERT INTO userlist (userid, listid, isref) VALUES ($1,$2, $3)",
          [userid, listid, true])
@@ -159,24 +159,24 @@ async function user_ref_a_list(client, userid, listid){
         res = await client.query("update lists set refcount = refcount+1 WHERE id = $1 RETURNING *",
          [listid])
         
-        await client.query('COMMIT')
+        if(useTransaction)await client.query('COMMIT')
 
         return  (res.rowCount===1)?res.rows[0]:null
     } catch (e) {
-        await client.query('ROLLBACK')
+        if(useTransaction)await client.query('ROLLBACK')
         throw e
     }
 }
 
-async function user_delete_a_ref_list(client, userid, listid){
-    try {
-        await client.query('BEGIN')
-
-        let {rowCount} = await client.query("select 1 from userlist where userid = $1 and listid = $2",
+async function user_delete_a_ref_list(client, userid, listid, useTransaction = true){
+    let {rowCount} = await client.query("select 1 from userlist where userid = $1 and listid = $2",
          [userid, listid])
 
-        if(rowCount==0)//不存在
-            return null
+    if(rowCount==0)//不存在
+        return null
+
+    try {
+        if(useTransaction)await client.query('BEGIN')
 
         res = await client.query("DELETE FROM userlist WHERE userid = $1 AND listid = $2",
          [userid, listid])
@@ -184,18 +184,18 @@ async function user_delete_a_ref_list(client, userid, listid){
         res = await client.query("update lists set refcount = (refcount-1) WHERE id = $1 RETURNING *",
          [listid])
         
-        await client.query('COMMIT')
+        if(useTransaction)await client.query('COMMIT')
 
         return  (res.rowCount===1)?res.rows[0]:null
     } catch (e) {
-        await client.query('ROLLBACK')
+        if(useTransaction)await client.query('ROLLBACK')
         throw e
     }
 }
 
-async function user_delete_all_ref_list(client, listid){
+async function user_delete_all_ref_list(client, listid, useTransaction = true){
     try {
-        await client.query('BEGIN')
+        if(useTransaction)await client.query('BEGIN')
 
         let {rowCount} = await client.query("DELETE FROM userlist WHERE listid = $1 AND isref = true",
          [listid])
@@ -203,24 +203,24 @@ async function user_delete_all_ref_list(client, listid){
         res = await client.query("update lists set refcount = (refcount-$2) WHERE id = $1 RETURNING *",
          [listid, rowCount])
         
-        await client.query('COMMIT')
+        if(useTransaction)await client.query('COMMIT')
 
         return  (res.rowCount===1)?res.rows[0]:null
     } catch (e) {
-        await client.query('ROLLBACK')
+        if(useTransaction)await client.query('ROLLBACK')
         throw e
     }
 }
 
-async function user_add_a_list_owner(client, userid, listid){
-    try {
-        await client.query('BEGIN')
-
-        let {rowCount} = await client.query("select 1 from userlist where userid = $1 and listid = $2",
+async function user_add_a_list_owner(client, userid, listid, useTransaction = true){
+    let {rowCount} = await client.query("select 1 from userlist where userid = $1 and listid = $2",
          [userid, listid])
 
-        if(rowCount==1)//已經存在了
-            return null
+    if(rowCount==1)//已經存在了
+        return null
+
+    try {
+        if(useTransaction)await client.query('BEGIN')
 
         let res = await client.query("INSERT INTO userlist (userid, listid, isref) VALUES ($1,$2, $3)",
          [userid, listid, false])
@@ -228,26 +228,26 @@ async function user_add_a_list_owner(client, userid, listid){
         res = await client.query("update lists SET ownercount = ownercount+1 WHERE id = $1 returning *",
          [listid])
 
-        await client.query('COMMIT')
+        if(useTransaction)await client.query('COMMIT')
 
         return  (res.rowCount===1)?res.rows[0]:null
     } catch (e) {
-        await client.query('ROLLBACK')
+        if(useTransaction)await client.query('ROLLBACK')
         throw e
     }
 }
 
 
 
-async function user_remove_a_list_owner(client, userid, listid){
-    try {
-        await client.query('BEGIN')
-
-        let {rowCount} = await client.query("select 1 from userlist where userid = $1 and listid = $2",
+async function user_remove_a_list_owner(client, userid, listid, useTransaction = true){
+    let {rowCount} = await client.query("select 1 from userlist where userid = $1 and listid = $2",
          [userid, listid])
 
-        if(rowCount==0)//不存在
-            return null
+    if(rowCount==0)//不存在
+        return null
+        
+    try {
+        if(useTransaction)await client.query('BEGIN')
 
         let res = await client.query("DELETE FROM userlist WHERE userid = $1 AND listid = $2",
          [userid, listid])
@@ -255,11 +255,11 @@ async function user_remove_a_list_owner(client, userid, listid){
          res = await client.query("update lists SET ownercount = ownercount-1 WHERE id = $1 returning *",
         [listid])
         
-        await client.query('COMMIT')
+        if(useTransaction)await client.query('COMMIT')
 
         return  (res.rowCount===1)?res.rows[0]:null
     } catch (e) {
-        await client.query('ROLLBACK')
+        if(useTransaction)await client.query('ROLLBACK')
         throw e
     }
 }
@@ -267,9 +267,9 @@ async function user_remove_a_list_owner(client, userid, listid){
 //(1)建立list
 //(2)建立user和list關聯(userlist)
 //return: id, listname, description, isref
-async function user_create_a_list(client, userid, listname, description, ispublic) {
+async function user_create_a_list(client, userid, listname, description, ispublic, useTransaction = true) {
     try {
-        await client.query('BEGIN')
+        if(useTransaction)await client.query('BEGIN')
 
         const { rows } = await client.query("INSERT INTO lists (listname, description, ispublic) VALUES ($1,$2,$3) RETURNING id, listname, description",
          [listname, description, ispublic])
@@ -277,12 +277,12 @@ async function user_create_a_list(client, userid, listname, description, ispubli
         await client.query("INSERT INTO userlist (userid, listid, isref) VALUES ($1,$2, $3)",
          [userid, rows[0].id, false])
         
-        await client.query('COMMIT')
+        if(useTransaction)await client.query('COMMIT')
 
         rows[0].isref = false
         return rows[0]
     } catch (e) {
-        await client.query('ROLLBACK')
+        if(useTransaction)await client.query('ROLLBACK')
         throw e
     }
 }
@@ -313,7 +313,7 @@ async function get_list_ref(client, listid) {
 //(2)移除List所有的Music(ref):
 //(3)list是否已經清空？:is_no_music_in_this_list
 //  (1)刪除所有對這個list的關注:user_delete_all_ref_list
-//  (2)刪除該List實體
+//  (2)刪除該List實體:
 async function delete_user_list(client, listid) {
     let refs =await get_list_owner(client, 
         listid)
@@ -336,13 +336,13 @@ async function is_no_music_in_this_list(client, listid) {
     return (count===0)
 }
 
-async function template(client, userid) {
+async function template(client, userid,useTransaction = true) {
     try {
-        await client.query('BEGIN')
+        if(useTransaction)await client.query('BEGIN')
 
-        await client.query('COMMIT')
+        if(useTransaction)await client.query('COMMIT')
     } catch (e) {
-        await client.query('ROLLBACK')
+        if(useTransaction)await client.query('ROLLBACK')
         throw e
     }
 }

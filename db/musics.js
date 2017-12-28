@@ -85,12 +85,12 @@ const pack ={
     },
 
     user_ref_a_music:async function(client,queryMap){
-        return await add_relation_listmusic(client, 
+        return await user_ref_a_music(client, 
         queryMap.listid, queryMap.musicid, true)
     },
 
     user_delete_a_ref_music:async function(client,queryMap){
-        return await remove_relation_listmusic(client, 
+        return await user_delete_a_ref_music(client, 
             queryMap.listid, queryMap.musicid)
     },
 
@@ -162,22 +162,54 @@ async function create_music(client, userid, listid, musicname, description, ispu
     }
 }
 
-async function add_relation_listmusic(client, listid, musicid, isref){
-    let {rowCount} = await client.query("select 1 from listmusic where listid = $1 and musicid = $2",
-     [listid, musicid])
+async function user_ref_a_music(client, listid, musicid, isref){
+    try {
+        await client.query('BEGIN')
 
-     if(rowCount==1)//已經存在了
-        return null
+        let {rowCount} = await client.query("select 1 from listmusic where listid = $1 and musicid = $2",
+         [listid, musicid])
 
-    let res = await client.query("INSERT INTO listmusic (listid, musicid, isref) VALUES ($1, $2, $3) RETURNING *",
-     [listid, musicid, isref])
-    return  (res.rowCount===1)?res.rows[0]:null
+        if(rowCount==1)//已經存在了
+            return null
+
+        let res = await client.query("INSERT INTO listmusic (listid, musicid, isref) VALUES ($1, $2, $3)",
+         [listid, musicid, isref])
+
+        res = await client.query("update musics SET refcount = refcount+1 WHERE id = $1 returning *",
+         [musicid])
+        
+        await client.query('COMMIT')
+
+        return  (res.rowCount===1)?res.rows[0]:null
+    } catch (e) {
+        await client.query('ROLLBACK')
+        throw e
+    }
 }
 
-async function remove_relation_listmusic(client, listid, musicid){
-    let res = await client.query("DELETE FROM listmusic WHERE listid = $1 AND musicid = $2 RETURNING *",
-     [listid, musicid])
-    return  (res.rowCount===1)?res.rows[0]:null
+async function user_delete_a_ref_music(client, listid, musicid){
+    try {
+        await client.query('BEGIN')
+
+        let {rowCount} = await client.query("select 1 from listmusic where listid = $1 and musicid = $2",
+         [listid, musicid])
+
+        if(rowCount==0)//不存在
+            return null
+
+        res = await client.query("DELETE FROM listmusic WHERE listid = $1 AND musicid = $2",
+         [listid, musicid])
+
+        res = await client.query("update musics SET refcount = refcount-1 WHERE id = $1 returning *",
+         [musicid])
+        
+        await client.query('COMMIT')
+
+        return  (res.rowCount===1)?res.rows[0]:null
+    } catch (e) {
+        await client.query('ROLLBACK')
+        throw e
+    }
 }
 
 async function user_add_a_music_owner(client, userid, musicid){
@@ -190,7 +222,7 @@ async function user_add_a_music_owner(client, userid, musicid){
         if(res.rowCount==1)//已經存在了
            return null
    
-        res = await client.query("INSERT INTO usermusic (userid, musicid) VALUES ($1, $2) RETURNING *",
+        res = await client.query("INSERT INTO usermusic (userid, musicid) VALUES ($1, $2)",
         [userid, musicid])
 
         res = await client.query("update musics SET ownercount = ownercount+1 WHERE id = $1 returning *",
@@ -209,7 +241,13 @@ async function user_become_not_a_creator_of_music(client, userid, musicid){
     try{
         await client.query('BEGIN')
 
-        let res = await client.query("DELETE FROM usermusic WHERE userid = $1 AND musicid = $2 RETURNING *",
+        let res = await client.query("select 1 from usermusic where userid = $1 and musicid = $2",
+        [userid, musicid])
+   
+        if(res.rowCount==0)//不存在
+           return null
+
+        res = await client.query("DELETE FROM usermusic WHERE userid = $1 AND musicid = $2",
         [userid, musicid])
 
         res = await client.query("update musics SET ownercount = ownercount-1 WHERE id = $1 returning *",

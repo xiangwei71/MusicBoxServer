@@ -127,7 +127,7 @@ const pack ={
     
     delete_music:async function(client,queryMap){
         return await delete_music(client, 
-            queryMap.userid, queryMap.listid, queryMap.musicid)
+            queryMap.userid, queryMap.musicid)
     },
     //(1)修改ispublic需要多作什麼處理？
 
@@ -263,7 +263,7 @@ async function user_become_not_a_creator_of_music(client, userid, musicid){
 }
 
 async function get_all_music_under_this_list(client, listid) {
-    let res = await client.query("select listmusic.listid, listmusic.musicid, musicname, description, voterscount, averagestart, ownercount,createtime, isref FROM listmusic,musics where listmusic.musicid = musics.id and listmusic.listid = $1 order by isref, createtime desc",
+    let res = await client.query("select listmusic.listid, listmusic.musicid, musicname, description, voterscount, averagestart, ownercount,refcount,createtime, isref FROM listmusic,musics where listmusic.musicid = musics.id and listmusic.listid = $1 order by isref, createtime desc",
      [listid])
     return  (res.rowCount>0)?res.rows:[]
 }
@@ -287,13 +287,13 @@ async function get_all_music_I_creat(client, userid) {
 }
 
 //(1)刪除listmusic關聯(實體和ref)
-//(2)刪除usermusic關聯
+//(2)刪除usermusic關聯(作者)
 //(3)刪除music
-async function delete_music(client, userid, listid, musicid) {
+async function delete_music(client, userid, musicid) {
     try {
         await client.query('BEGIN')
 
-        const res = await client.query("select ownercount from musics where id = $1",
+        let res = await client.query("select ownercount from musics where id = $1",
         [musicid])
 
         if(res.rowCount!==1){//檢查musicid是否存在
@@ -310,16 +310,17 @@ async function delete_music(client, userid, listid, musicid) {
         await client.query("delete from listmusic where musicid = $1",
         [musicid])
 
+        //(2)刪除usermusic關聯(作者)
         await client.query("delete from usermusic where userid = $1 and musicid = $2",
          [userid, musicid])
 
-        await client.query("delete from musics where id = $1",
+        //(3)刪除music
+        res = await client.query("delete from musics where id = $1 returning *",
          [musicid])
         
         await client.query('COMMIT')
 
-        rows[0].isref = false
-        return rows[0]
+        return res.rows[0]
     } catch (e) {
         await client.query('ROLLBACK')
         throw e

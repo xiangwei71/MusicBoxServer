@@ -36,7 +36,8 @@ const db={
         if(record==null)
             record = errorMsg
         
-        return record
+        let json = {"data":record} 
+        return json
     }
 }
 

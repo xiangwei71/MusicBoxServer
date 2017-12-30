@@ -310,9 +310,9 @@ async function get_all_list_of_this_user(client, userid) {
 
 
 async function get_all_list_exclude_this_user(client, userid) {
-    let res = await client.query( "select distinct on (lists.id) lists.id, listname, description, createtime,userid,refcount FROM lists,userlist "+
+    let res = await client.query( "select distinct on (lists.id) lists.id, listname, description, createtime,userid,ownercount,refcount FROM lists,userlist "+
     "where userlist.listid = lists.id and ispublic = true and isref = false and userid != $1 "+
-    "and not exists (select * from userlist t where t.isref = false and t.userid = $1 and t.listid = lists.id)"+
+    "and not exists (select * from userlist t where t.userid = $1 and t.listid = lists.id)"+
     "order by lists.id desc, refcount desc",
      [userid])
     return  (res.rowCount>0)?res.rows:[]

@@ -127,7 +127,7 @@ const pack ={
 
     get_all_list_exclude_this_user: async function (client,queryMap){
         return await get_all_list_exclude_this_user(client, 
-            queryMap.userid)
+            queryMap.userid,queryMap.islimit)
     },
 
     get_list_owner: async function (client,queryMap){
@@ -309,11 +309,12 @@ async function get_all_list_of_this_user(client, userid) {
 }
 
 
-async function get_all_list_exclude_this_user(client, userid) {
+async function get_all_list_exclude_this_user(client, userid, islimit) {
     let res = await client.query( "select distinct on (lists.id) lists.id, listname, description, createtime,userid,ownercount,refcount FROM lists,userlist "+
     "where userlist.listid = lists.id and ispublic = true and isref = false and userid != $1 "+
-    "and not exists (select * from userlist t where t.userid = $1 and t.listid = lists.id)"+
-    "order by lists.id desc, refcount desc",
+    "and not exists (select * from userlist t where t.userid = $1 and t.listid = lists.id) "+
+    "order by lists.id desc, refcount desc "+
+    (islimit?"limit 1":""),
      [userid])
     return  (res.rowCount>0)?res.rows:[]
 

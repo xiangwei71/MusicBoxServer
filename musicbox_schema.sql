@@ -49,8 +49,6 @@ CREATE TABLE subreplys (
 --多對多關聯
 
 -- isref = false 即是擁有者
--- 全部清單: userid != 自己 and ispublic = true and isref = false 
---然後前端要過濾掉和自己共用的list(先傳一分自己所有list到Client)
 CREATE TABLE userlist (
    id serial primary key,
    userid character varying(100) references users(userid),
@@ -59,7 +57,6 @@ CREATE TABLE userlist (
 );
 
 --全部音樂: userid!= 自己 and ispublic = true
---然後前端要過濾掉和自己共同創作的music(先傳一分自己的所有Music到Client)
 CREATE TABLE usermusic (
    id serial primary key,
    userid character varying(100) references users(userid),

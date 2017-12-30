@@ -88,6 +88,13 @@ router.post("/Musics/get_music_ref/",async (ctx,next)=>{
         'NOT SUCCESS:get_music_ref')
 })
 
+router.post("/Musics/get_all_public_musics/",async (ctx,next)=>{
+    ctx.body =await db.OneResponse(
+        ctx.request.body,
+        pack.get_all_public_musics,
+        'NOT SUCCESS:get_all_public_musics')
+})
+
 const pack ={
     create_music:async function(client,queryMap){
         return await create_music(client,
@@ -148,6 +155,11 @@ const pack ={
     delete_music:async function(client,queryMap){
         return await delete_music(client, 
             queryMap.userid, queryMap.musicid)
+    },
+
+    get_all_public_musics:async function(client,queryMap){
+        return await get_all_public_musics(client, 
+            queryMap.userid, queryMap.islimit)
     },
     //(1)修改ispublic需要多作什麼處理？
 
@@ -398,5 +410,16 @@ async function delete_music(client, userid, musicid, useTransaction = true) {
 async function get_music_ref(client, musicid) {
     let res = await client.query("select listid from listmusic where musicid = $1 and isref = true",
      [musicid])
+    return  (res.rowCount>0)?res.rows:[]
+}
+
+async function get_all_public_musics(client, userid, islimit){
+    let res = await client.query(
+        "select musics.id,musicname,description,createtime,ownercount,refcount,averagestar,voterscount, userid = $1 as ismysong from musics,usermusic "+
+        "where musics.id = usermusic.musicid and ispublic = true "+
+        "and (userid = $1 or (userid!=$1 and not exists (select * from usermusic t where t.musicid = musics.id and t.userid = $1))) "+
+        "order by musicid "+
+        (islimit?"limit 5":""),
+     [userid])
     return  (res.rowCount>0)?res.rows:[]
 }

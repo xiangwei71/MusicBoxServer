@@ -90,3 +90,9 @@ async function delete_user(client, userid){
      [userid])
     return  (res.rowCount===1)?res.rows[0]:null
 }
+
+async function delete_user(client, userid){
+    let res = await client.query("DELETE FROM users WHERE userid = $1 RETURNING userid",
+     [userid])
+    return  (res.rowCount===1)?res.rows[0]:null
+}

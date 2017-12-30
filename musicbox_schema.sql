@@ -18,7 +18,8 @@ CREATE TABLE musics (
 
    ispublic boolean DEFAULT true NOT NULL,
    voterscount integer DEFAULT 0  NOT NULL,
-   averagestart integer DEFAULT 0 NOT NULL,
+   totalstar integer DEFAULT 0 NOT NULL,
+   averagestar integer DEFAULT 0 NOT NULL,
    createtime timestamp DEFAULT current_timestamp,
 
    ownercount integer DEFAULT 1 NOT NULL,

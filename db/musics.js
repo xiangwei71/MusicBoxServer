@@ -45,11 +45,18 @@ router.post("/Musics/user_become_not_a_creator_of_music/",async (ctx,next)=>{
         'NOT SUCCESS:user_become_not_a_creator_of_music')
 })
 
-router.post("/Musics/get_all_music_under_this_list/",async (ctx,next)=>{
+router.post("/Musics/get_list_music_by_owner/",async (ctx,next)=>{
     ctx.body =await db.OneResponse(
         ctx.request.body,
-        pack.get_all_music_under_this_list,
-        'NOT SUCCESS:get_all_music_under_this_list')
+        pack.get_list_music_by_owner,
+        'NOT SUCCESS:get_list_music_by_owner')
+})
+
+router.post("/Musics/get_list_music_by_viewer/",async (ctx,next)=>{
+    ctx.body =await db.OneResponse(
+        ctx.request.body,
+        pack.get_list_music_by_viewer,
+        'NOT SUCCESS:get_list_music_by_viewer')
 })
 
 router.post("/Musics/get_all_music_I_creat/",async (ctx,next)=>{
@@ -112,9 +119,14 @@ const pack ={
             queryMap.userid, queryMap.musicid)
     },
 
-    get_all_music_under_this_list:async function(client,queryMap){
-        return await get_all_music_under_this_list(client, 
+    get_list_music_by_owner:async function(client,queryMap){
+        return await get_list_music_by_owner(client, 
             queryMap.listid)
+    },
+  
+    get_list_music_by_viewer:async function(client,queryMap){
+        return await get_list_music_by_viewer(client, 
+            queryMap.listid,queryMap.userid)
     },
 
     get_all_music_I_creat:async function(client,queryMap){
@@ -311,9 +323,16 @@ async function user_become_not_a_creator_of_music(client, userid, musicid, useTr
     }
 }
 
-async function get_all_music_under_this_list(client, listid) {
-    let res = await client.query("select listmusic.listid, listmusic.musicid, musicname, description, voterscount, averagestart, ownercount,refcount,createtime, isref FROM listmusic,musics where listmusic.musicid = musics.id and listmusic.listid = $1 order by isref, createtime desc",
+async function get_list_music_by_owner(client, listid) {
+    let res = await client.query("select listmusic.listid, listmusic.musicid, musicname, description, voterscount, averagestar, ownercount,refcount,createtime, isref FROM listmusic,musics where listmusic.musicid = musics.id and listmusic.listid = $1 order by isref, createtime desc",
      [listid])
+    return  (res.rowCount>0)?res.rows:[]
+}
+
+async function get_list_music_by_viewer(client, listid,userid) {
+    let res = await client.query("select distinct on (musics.id) musics.id, musicname,description,voterscount,averagestar,createtime,ownercount,refcount from listmusic,musics, usermusic "+
+    "where listmusic.musicid = musics.id and usermusic.musicid = musics.id and listmusic.listid = $1 and  isref = false and ispublic = true and usermusic.userid != $2 order by musics.id desc",
+     [listid, userid])
     return  (res.rowCount>0)?res.rows:[]
 }
 
@@ -330,7 +349,7 @@ async function get_music_all_ref_user(client, musicid) {
 }
 
 async function get_all_music_I_creat(client, userid) {
-    let res = await client.query("select musics.id, musicname, description, voterscount, averagestart, createtime,ownercount FROM usermusic,musics where usermusic.musicid = musics.id and usermusic.userid = $1",
+    let res = await client.query("select musics.id, musicname, description, voterscount, averagestar, createtime,ownercount FROM usermusic,musics where usermusic.musicid = musics.id and usermusic.userid = $1",
      [userid])
     return  (res.rowCount>0)?res.rows:[]
 }

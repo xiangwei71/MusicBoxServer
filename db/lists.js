@@ -46,6 +46,14 @@ router.post("/Lists/get_all_list_of_this_user/",async (ctx,next)=>{
         'NOT SUCCESS:get_all_list_of_this_user')
 })
 
+
+router.post("/Lists/get_all_list_exclude_this_user/",async (ctx,next)=>{
+    ctx.body =await db.OneResponse(
+        ctx.request.body,
+        pack.get_all_list_exclude_this_user,
+        'NOT SUCCESS:get_all_list_exclude_this_user')
+})
+
 router.post("/Lists/get_list_owner/",async (ctx,next)=>{
     ctx.body =await db.OneResponse(
         ctx.request.body,
@@ -114,6 +122,11 @@ const pack ={
 
     get_all_list_of_this_user: async function (client,queryMap){
         return await get_all_list_of_this_user(client, 
+            queryMap.userid)
+    },
+
+    get_all_list_exclude_this_user: async function (client,queryMap){
+        return await get_all_list_exclude_this_user(client, 
             queryMap.userid)
     },
 
@@ -295,11 +308,16 @@ async function get_all_list_of_this_user(client, userid) {
     return  (res.rowCount>0)?res.rows:[]
 }
 
-//未完成
-async function get_all_list_not_this_user(client, userid) {
-    let res = await client.query("select lists.id, listname, description, createtime, isref FROM userlist,lists where userlist.listid = lists.id and userid = $1 order by  isref , createtime desc",
+
+async function get_all_list_exclude_this_user(client, userid) {
+    let res = await client.query( "select distinct on (lists.id) lists.id, listname, description, createtime,userid,refcount FROM lists,userlist "+
+    "where userlist.listid = lists.id and ispublic = true and isref = false and userid != $1 "+
+    "and not exists (select * from userlist t where t.isref = false and t.userid = $1 and t.listid = lists.id)"+
+    "order by lists.id desc, refcount desc",
      [userid])
     return  (res.rowCount>0)?res.rows:[]
+
+   
 }
 
 async function get_list_owner(client, listid) {

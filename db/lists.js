@@ -6,162 +6,134 @@ const router = new Router();
 
 router.post("/Lists/user_create_a_list/",async (ctx,next)=>{
     ctx.body =await db.OneResponse(
-        ctx.request.body,
-        pack.user_create_a_list,
-        'NOT SUCCESS:user_create_a_list')
+        'NOT SUCCESS:user_create_a_list',
+        async (client)=>{
+            let queryMap = ctx.request.body
+            return await user_create_a_list(client,
+                queryMap.userid, queryMap.listname, queryMap.description, queryMap.ispublic)
+        })
 })
 
 router.post("/Lists/user_ref_a_list/",async (ctx,next)=>{
     ctx.body =await db.OneResponse(
-        ctx.request.body,
-        pack.user_ref_a_list,
-        'NOT SUCCESS:user_ref_a_list')
+        'NOT SUCCESS:user_ref_a_list',
+        async (client)=>{
+            let queryMap = ctx.request.body
+            return await user_ref_a_list(client, 
+                queryMap.userid, queryMap.listid)
+        })
 })
 
 router.post("/Lists/user_add_a_list_owner/",async (ctx,next)=>{
     ctx.body =await db.OneResponse(
-        ctx.request.body,
-        pack.user_add_a_list_owner,
-        'NOT SUCCESS:user_add_a_list_owner')
+        'NOT SUCCESS:user_add_a_list_owner',
+        async (client)=>{
+            let queryMap = ctx.request.body
+            return await user_add_a_list_owner(client, 
+                queryMap.userid, queryMap.listid)
+        })
 })
 
 router.post("/Lists/user_remove_a_list_owner/",async (ctx,next)=>{
     ctx.body =await db.OneResponse(
-        ctx.request.body,
-        pack.user_remove_a_list_owner,
-        'NOT SUCCESS:user_remove_a_list_owner')
+        'NOT SUCCESS:user_remove_a_list_owner',
+        async (client)=>{
+            let queryMap = ctx.request.body
+            return await user_remove_a_list_owner(client, 
+                queryMap.userid, queryMap.listid)
+        })
 })
 
 router.post("/Lists/user_delete_a_ref_list/",async (ctx,next)=>{
     ctx.body =await db.OneResponse(
-        ctx.request.body,
-        pack.user_delete_a_ref_list,
-        'NOT SUCCESS:user_delete_a_ref_list')
+        'NOT SUCCESS:user_delete_a_ref_list',
+        async (client)=>{
+            let queryMap = ctx.request.body
+            return await user_delete_a_ref_list(client, 
+                queryMap.userid, queryMap.listid)
+        })
 })
 
 router.post("/Lists/get_all_list_of_this_user/",async (ctx,next)=>{
     ctx.body =await db.OneResponse(
-        ctx.request.body,
-        pack.get_all_list_of_this_user,
-        'NOT SUCCESS:get_all_list_of_this_user')
+        'NOT SUCCESS:get_all_list_of_this_user',
+        async (client)=>{
+            let queryMap = ctx.request.body
+            return await get_all_list_of_this_user(client, 
+                queryMap.userid)
+        })
 })
 
 
 router.post("/Lists/get_all_list_exclude_this_user/",async (ctx,next)=>{
     ctx.body =await db.OneResponse(
-        ctx.request.body,
-        pack.get_all_list_exclude_this_user,
-        'NOT SUCCESS:get_all_list_exclude_this_user')
+        'NOT SUCCESS:get_all_list_exclude_this_user',
+        async (client)=>{
+            let queryMap = ctx.request.body
+            return await get_all_list_exclude_this_user(client, 
+                queryMap.userid,queryMap.islimit)
+        })
 })
 
 router.post("/Lists/get_all_list_not_ref/",async (ctx,next)=>{
     ctx.body =await db.OneResponse(
-        ctx.request.body,
-        pack.get_all_list_not_ref,
-        'NOT SUCCESS:get_all_list_not_ref')
+        'NOT SUCCESS:get_all_list_not_ref',
+        async (client)=>{
+            let queryMap = ctx.request.body
+            return await get_all_list_not_ref(client, 
+                queryMap.userid,queryMap.islimit)
+        })
 })
 
 router.post("/Lists/get_list_owner/",async (ctx,next)=>{
     ctx.body =await db.OneResponse(
-        ctx.request.body,
-        pack.get_list_owner,
-        'NOT SUCCESS:get_list_owner')
+        'NOT SUCCESS:get_list_owner',
+        async (client)=>{
+            let queryMap = ctx.request.body
+            return await get_list_owner(client, 
+                queryMap.listid)
+        })
 })
 
 router.post("/Lists/get_list_ref/",async (ctx,next)=>{
     ctx.body =await db.OneResponse(
-        ctx.request.body,
-        pack.get_list_ref,
-        'NOT SUCCESS:get_list_ref')
+        'NOT SUCCESS:get_list_ref',
+        async (client)=>{
+            let queryMap = ctx.request.body
+            return await get_list_ref(client, 
+                queryMap.listid)
+        })
 })
 
 router.post("/Lists/is_no_music_in_this_list/",async (ctx,next)=>{
     ctx.body =await db.OneResponse(
-        ctx.request.body,
-        pack.is_no_music_in_this_list,
-        'NOT SUCCESS:is_no_music_in_this_list')
+        'NOT SUCCESS:is_no_music_in_this_list',
+        async (client)=>{
+            let queryMap = ctx.request.body
+            return await is_no_music_in_this_list(client, 
+                queryMap.listid)
+        })
 })
 
 router.post("/Lists/delete_user_list/",async (ctx,next)=>{
     ctx.body =await db.OneResponse(
-        ctx.request.body,
-        pack.delete_user_list,
-        'NOT SUCCESS:delete_user_list')
+        'NOT SUCCESS:delete_user_list',
+        async (client)=>{
+            let queryMap = ctx.request.body
+            return await delete_user_list(client, 
+                queryMap.userid,queryMap.listid)
+        })
 })
 
 router.post("/Lists/user_delete_all_ref_list/",async (ctx,next)=>{
     ctx.body =await db.OneResponse(
-        ctx.request.body,
-        pack.user_delete_all_ref_list,
-        'NOT SUCCESS:user_delete_all_ref_list')
+        'NOT SUCCESS:user_delete_all_ref_list',
+        async (client)=>{
+            let queryMap = ctx.request.body
+            return await user_delete_all_ref_list(client, 
+                queryMap.listid)
+        })
 })
-
-const pack ={
-    user_create_a_list: async function (client,queryMap){
-        return await user_create_a_list(client,
-             queryMap.userid, queryMap.listname, queryMap.description, queryMap.ispublic)
-    },
-
-    user_ref_a_list: async function (client,queryMap){
-        return await user_ref_a_list(client, 
-            queryMap.userid, queryMap.listid)
-    },
-
-    user_add_a_list_owner: async function (client,queryMap){
-        return await user_add_a_list_owner(client, 
-            queryMap.userid, queryMap.listid)
-    },
-
-    user_remove_a_list_owner: async function (client,queryMap){
-        return await user_remove_a_list_owner(client, 
-            queryMap.userid, queryMap.listid)
-    },
-
-    user_delete_a_ref_list: async function (client,queryMap){
-        return await user_delete_a_ref_list(client, 
-            queryMap.userid, queryMap.listid)
-    },
-
-    user_delete_all_ref_list: async function (client,queryMap){
-        return await user_delete_all_ref_list(client, 
-            queryMap.listid)
-    },
-
-    get_all_list_of_this_user: async function (client,queryMap){
-        return await get_all_list_of_this_user(client, 
-            queryMap.userid)
-    },
-
-    get_all_list_exclude_this_user: async function (client,queryMap){
-        return await get_all_list_exclude_this_user(client, 
-            queryMap.userid,queryMap.islimit)
-    },
-
-    get_all_list_not_ref: async function (client,queryMap){
-        return await get_all_list_not_ref(client, 
-            queryMap.userid,queryMap.islimit)
-    },
-
-    get_list_owner: async function (client,queryMap){
-        return await get_list_owner(client, 
-            queryMap.listid)
-    },
-
-    get_list_ref: async function (client,queryMap){
-        return await get_list_ref(client, 
-            queryMap.listid)
-    },
-
-    delete_user_list: async function (client,queryMap){
-        return await delete_user_list(client, 
-            queryMap.userid,queryMap.listid)
-    },
-
-    is_no_music_in_this_list: async function (client,queryMap){
-        return await is_no_music_in_this_list(client, 
-            queryMap.listid)
-    },
-}
 
 const openPack ={
     getRouter:function (){

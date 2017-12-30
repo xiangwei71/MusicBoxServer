@@ -1,62 +1,43 @@
 const Router = require('koa-router');
 const db = require('./db');
 
-const Get_Not_Success = 'Get_Not_Success'
-const Post_Not_Success = 'Post_Not_Success'
-const Put_Not_Success = 'Put_Not_Success'
-const Delete_Not_Success = 'Delete_Not_Success'
-
 const router = new Router();
 
-router.post("/Users/get/",async (ctx,next)=>{
+router.post("/Users/get_user/",async (ctx,next)=>{
     ctx.body =await db.OneResponse(
-        ctx.request.body,
-        pack.get_user,
-        Get_Not_Success)
+        'NOT SUCCESS:get_user',
+        async (client)=>{
+            let queryMap = ctx.request.body
+            return await get_user(client, queryMap.userid)
+        })
 })
 
-router.post("/Users/create/",async (ctx,next)=>{
+router.post("/Users/create_user/",async (ctx,next)=>{
     ctx.body = await db.OneResponse(
-        ctx.request.body,
-        pack.create_user,
-        Post_Not_Success)
+        'NOT SUCCESS:create_user',
+        async (client)=>{
+            let queryMap = ctx.request.body
+            return await create_user(client,queryMap.userid,queryMap.pwd)
+        })
 })
 
-router.post("/Users/update/",async (ctx,next)=>{
+router.post("/Users/update_user/",async (ctx,next)=>{
     ctx.body = await db.OneResponse(
-        ctx.request.body,
-        pack.update_user,
-        Put_Not_Success)
+        'NOT SUCCESS:update_user',
+        async (client)=>{
+            let queryMap = ctx.request.body
+            return await update_user(client, queryMap.userid, queryMap.pwd);
+        })
 })
 
-router.post("/Users/delete/",async (ctx,next)=>{
+router.post("/Users/delete_user/",async (ctx,next)=>{
     ctx.body = await db.OneResponse(
-        ctx.request.body,
-        pack.delete_user,
-        Delete_Not_Success)
+        'NOT SUCCESS:delete_user',
+        async (client)=>{
+            let queryMap = ctx.request.body
+            return await delete_user(client, queryMap.userid, queryMap.pwd);
+        })
 })
-
-const packPack ={
-    get_user: async function (client, queryMap){
-        return await get_user(client, queryMap.userid)
-    },
-    
-    create_user: async function (client, queryMap){
-        let record = await get_user(client,queryMap.userid);
-        if(record!=null)//user已經存在
-            return null
-    
-        return create_user(client,queryMap.userid,queryMap.pwd)
-    },
-    
-    update_user: async function(client, queryMap){
-        return await update_user(client, queryMap.userid, queryMap.pwd);
-    },
-    
-    delete_user: async function(client, queryMap){
-        return await delete_user(client, queryMap.userid);
-    }
-}
 
 const openPack = {
     getRouter:function (){
@@ -72,6 +53,10 @@ async function get_user(client, userid){
 }
 
 async function create_user(client, userid, pwd){
+    let record = await get_user(client,userid);
+    if(record!=null)//user已經存在
+        return null
+        
     let res = await client.query("INSERT INTO users (userid, pwd) VALUES ($1,$2) RETURNING userid",
      [userid, pwd])
     return  (res.rowCount===1)?res.rows[0]:null

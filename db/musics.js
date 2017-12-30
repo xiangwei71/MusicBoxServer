@@ -5,165 +5,136 @@ const router = new Router();
 
 router.post("/Musics/create_music/",async (ctx,next)=>{
     ctx.body =await db.OneResponse(
-        ctx.request.body,
-        pack.create_music,
-        'NOT SUCCESS:create_music')
+        'NOT SUCCESS:create_music',
+        async function(client){
+            let queryMap = ctx.request.body
+            return await create_music(client,
+                 queryMap.userid, queryMap.listid, queryMap.musicname, queryMap.description, queryMap.ispublic)
+        })
 })
 
 router.post("/Musics/user_ref_a_music/",async (ctx,next)=>{
     ctx.body =await db.OneResponse(
-        ctx.request.body,
-        pack.user_ref_a_music,
-        'NOT SUCCESS:user_ref_a_music')
+        'NOT SUCCESS:user_ref_a_music',
+        async function(client){
+            let queryMap = ctx.request.body
+            return await user_ref_a_music(client, 
+                queryMap.listid, queryMap.musicid, true)
+        })
 })
 
 router.post("/Musics/user_delete_a_ref_music/",async (ctx,next)=>{
     ctx.body =await db.OneResponse(
-        ctx.request.body,
-        pack.user_delete_a_ref_music,
-        'NOT SUCCESS:user_delete_a_ref_music')
+        'NOT SUCCESS:user_delete_a_ref_music',
+        async function(client){
+            let queryMap = ctx.request.body
+            return await user_delete_a_ref_music(client, 
+                queryMap.listid, queryMap.musicid)
+        })
 })
 
 router.post("/Musics/user_delete_all_ref_music/",async (ctx,next)=>{
     ctx.body =await db.OneResponse(
-        ctx.request.body,
-        pack.user_delete_all_ref_music,
-        'NOT SUCCESS:user_delete_all_ref_music')
+        'NOT SUCCESS:user_delete_all_ref_music',
+        async function(client){
+            let queryMap = ctx.request.body
+            return await user_delete_all_ref_music(client, 
+                queryMap.musicid)
+        })
 })
 
 router.post("/Musics/user_add_a_music_owner/",async (ctx,next)=>{
     ctx.body =await db.OneResponse(
-        ctx.request.body,
-        pack.user_add_a_music_owner,
-        'NOT SUCCESS:user_add_a_music_owner')
+        'NOT SUCCESS:user_add_a_music_owner',
+        async function(client){
+            let queryMap = ctx.request.body
+            return await user_add_a_music_owner(client, 
+                queryMap.userid, queryMap.musicid)
+        })
 })
 
 router.post("/Musics/user_become_not_a_creator_of_music/",async (ctx,next)=>{
     ctx.body =await db.OneResponse(
-        ctx.request.body,
-        pack.user_become_not_a_creator_of_music,
-        'NOT SUCCESS:user_become_not_a_creator_of_music')
+        'NOT SUCCESS:user_become_not_a_creator_of_music',
+        async function(client){
+            let queryMap = ctx.request.body
+            return await user_become_not_a_creator_of_music(client, 
+                queryMap.userid, queryMap.musicid)
+        })
 })
 
 router.post("/Musics/get_list_music_by_owner/",async (ctx,next)=>{
     ctx.body =await db.OneResponse(
-        ctx.request.body,
-        pack.get_list_music_by_owner,
-        'NOT SUCCESS:get_list_music_by_owner')
+        'NOT SUCCESS:get_list_music_by_owner',
+        async function(client){
+            let queryMap = ctx.request.body
+            return await get_list_music_by_owner(client, 
+                queryMap.listid)
+        })
 })
 
 router.post("/Musics/get_list_music_by_viewer/",async (ctx,next)=>{
     ctx.body =await db.OneResponse(
-        ctx.request.body,
-        pack.get_list_music_by_viewer,
-        'NOT SUCCESS:get_list_music_by_viewer')
+        'NOT SUCCESS:get_list_music_by_viewer',
+        async function(client){
+            let queryMap = ctx.request.body
+            return await get_list_music_by_viewer(client, 
+                queryMap.listid,queryMap.userid)
+        })
 })
 
 router.post("/Musics/get_all_music_I_creat/",async (ctx,next)=>{
     ctx.body =await db.OneResponse(
-        ctx.request.body,
-        pack.get_all_music_I_creat,
-        'NOT SUCCESS:get_all_music_I_creat')
+        'NOT SUCCESS:get_all_music_I_creat',
+        async function(client){
+            let queryMap = ctx.request.body
+            return await get_all_music_I_creat(client, 
+                queryMap.userid)
+        })
 })
 
 router.post("/Musics/delete_music/",async (ctx,next)=>{
     ctx.body =await db.OneResponse(
-        ctx.request.body,
-        pack.delete_music,
-        'NOT SUCCESS:delete_music')
+        'NOT SUCCESS:delete_music',
+        async function(client){
+            let queryMap = ctx.request.body
+            return await delete_music(client, 
+                queryMap.userid, queryMap.musicid)
+        })
 })
 
 
 router.post("/Musics/get_music_all_creator/",async (ctx,next)=>{
     ctx.body =await db.OneResponse(
-        ctx.request.body,
-        pack.get_music_all_creator,
-        'NOT SUCCESS:get_music_all_creator')
+        'NOT SUCCESS:get_music_all_creator',
+        async function(client){
+            let queryMap = ctx.request.body
+            return await get_music_all_creator(client, 
+                queryMap.musicid)
+        })
 })
 
 router.post("/Musics/get_music_ref/",async (ctx,next)=>{
     ctx.body =await db.OneResponse(
-        ctx.request.body,
-        pack.get_music_ref,
-        'NOT SUCCESS:get_music_ref')
+        'NOT SUCCESS:get_music_ref',
+        async function(client){
+            let queryMap = ctx.request.body
+            return await get_music_ref(client, 
+                queryMap.musicid)
+        })
 })
 
 router.post("/Musics/get_all_public_musics/",async (ctx,next)=>{
     ctx.body =await db.OneResponse(
-        ctx.request.body,
-        pack.get_all_public_musics,
-        'NOT SUCCESS:get_all_public_musics')
+        'NOT SUCCESS:get_all_public_musics',
+        async function(client){
+            let queryMap = ctx.request.body
+            return await get_all_public_musics(client, 
+                queryMap.userid, queryMap.islimit)
+        })
 })
 
-const pack ={
-    create_music:async function(client,queryMap){
-        return await create_music(client,
-             queryMap.userid, queryMap.listid, queryMap.musicname, queryMap.description, queryMap.ispublic)
-    },
-
-    user_ref_a_music:async function(client,queryMap){
-        return await user_ref_a_music(client, 
-        queryMap.listid, queryMap.musicid, true)
-    },
-
-    user_delete_a_ref_music:async function(client,queryMap){
-        return await user_delete_a_ref_music(client, 
-            queryMap.listid, queryMap.musicid)
-    },
-
-    user_delete_all_ref_music:async function(client,queryMap){
-        return await user_delete_all_ref_music(client, 
-            queryMap.musicid)
-    },
-
-    user_add_a_music_owner:async function(client,queryMap){
-        return await user_add_a_music_owner(client, 
-            queryMap.userid, queryMap.musicid)
-    },
-
-    user_become_not_a_creator_of_music:async function(client,queryMap){
-        return await user_become_not_a_creator_of_music(client, 
-            queryMap.userid, queryMap.musicid)
-    },
-
-    get_list_music_by_owner:async function(client,queryMap){
-        return await get_list_music_by_owner(client, 
-            queryMap.listid)
-    },
-  
-    get_list_music_by_viewer:async function(client,queryMap){
-        return await get_list_music_by_viewer(client, 
-            queryMap.listid,queryMap.userid)
-    },
-
-    get_all_music_I_creat:async function(client,queryMap){
-        return await get_all_music_I_creat(client, 
-            queryMap.userid)
-    },
-
-    get_music_all_creator:async function(client,queryMap){
-        return await get_music_all_creator(client, 
-            queryMap.musicid)
-    },
-
-    get_music_ref:async function(client,queryMap){
-        return await get_music_ref(client, 
-            queryMap.musicid)
-    },
- 
-    
-    delete_music:async function(client,queryMap){
-        return await delete_music(client, 
-            queryMap.userid, queryMap.musicid)
-    },
-
-    get_all_public_musics:async function(client,queryMap){
-        return await get_all_public_musics(client, 
-            queryMap.userid, queryMap.islimit)
-    },
-    //(1)修改ispublic需要多作什麼處理？
-
-}
+//(1)修改ispublic需要多作什麼處理？
 
 const openPack = {
     getRouter:function (){

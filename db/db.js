@@ -10,10 +10,10 @@ const pool = new Pool({
     connectionTimeoutMillis: 2000,
   })
 
-async function dbOperation(queryMap,todoFun){
+async function dbOperation(todoFun){
     const client = await pool.connect()
     try {
-        return await todoFun(client,queryMap)
+        return await todoFun(client)
     } finally {
         client.release()
         //console.log("release")
@@ -23,10 +23,10 @@ async function dbOperation(queryMap,todoFun){
 const db={
     Query_Error :'Query_Error',
 
-    OneResponse:async function (queryMap,todoFun,errorMsg){
+    OneResponse:async function (errorMsg, todoFun){
         let record
         try{
-            record = await dbOperation(queryMap,todoFun)
+            record = await dbOperation(todoFun)
         } catch(e){
             console.log("[error]")
             console.log(e.stack)

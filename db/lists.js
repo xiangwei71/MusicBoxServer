@@ -295,6 +295,13 @@ async function get_all_list_of_this_user(client, userid) {
     return  (res.rowCount>0)?res.rows:[]
 }
 
+//未完成
+async function get_all_list_not_this_user(client, userid) {
+    let res = await client.query("select lists.id, listname, description, createtime, isref FROM userlist,lists where userlist.listid = lists.id and userid = $1 order by  isref , createtime desc",
+     [userid])
+    return  (res.rowCount>0)?res.rows:[]
+}
+
 async function get_list_owner(client, listid) {
     let res = await client.query("select userid FROM userlist where listid = $1 and isref = false",
      [listid])

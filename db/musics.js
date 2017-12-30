@@ -331,7 +331,7 @@ async function get_list_music_by_owner(client, listid) {
 
 async function get_list_music_by_viewer(client, listid,userid) {
     let res = await client.query("select distinct on (musics.id) musics.id, musicname,description,voterscount,averagestar,createtime,ownercount,refcount from listmusic,musics, usermusic "+
-    "where listmusic.musicid = musics.id and usermusic.musicid = musics.id and listmusic.listid = $1 and  isref = false and ispublic = true and usermusic.userid != $2 order by musics.id desc",
+    "where listmusic.musicid = musics.id and usermusic.musicid = musics.id and listmusic.listid = $1 and  isref = false and (ispublic = true or (ispublic = false and usermusic.userid = $2)) order by musics.id desc",
      [listid, userid])
     return  (res.rowCount>0)?res.rows:[]
 }

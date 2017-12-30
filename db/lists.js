@@ -54,6 +54,13 @@ router.post("/Lists/get_all_list_exclude_this_user/",async (ctx,next)=>{
         'NOT SUCCESS:get_all_list_exclude_this_user')
 })
 
+router.post("/Lists/get_all_list_not_ref/",async (ctx,next)=>{
+    ctx.body =await db.OneResponse(
+        ctx.request.body,
+        pack.get_all_list_not_ref,
+        'NOT SUCCESS:get_all_list_not_ref')
+})
+
 router.post("/Lists/get_list_owner/",async (ctx,next)=>{
     ctx.body =await db.OneResponse(
         ctx.request.body,
@@ -127,6 +134,11 @@ const pack ={
 
     get_all_list_exclude_this_user: async function (client,queryMap){
         return await get_all_list_exclude_this_user(client, 
+            queryMap.userid,queryMap.islimit)
+    },
+
+    get_all_list_not_ref: async function (client,queryMap){
+        return await get_all_list_not_ref(client, 
             queryMap.userid,queryMap.islimit)
     },
 
@@ -308,16 +320,34 @@ async function get_all_list_of_this_user(client, userid) {
     return  (res.rowCount>0)?res.rows:[]
 }
 
-
+//排除我建立和ref的list
 async function get_all_list_exclude_this_user(client, userid, islimit) {
     let res = await client.query( "select distinct on (lists.id) lists.id, listname, description, createtime,userid,ownercount,refcount FROM lists,userlist "+
-    "where userlist.listid = lists.id and ispublic = true and isref = false and userid != $1 "+
+    "where userlist.listid = lists.id and ispublic = true and isref = false "+
     "and not exists (select * from userlist t where t.userid = $1 and t.listid = lists.id) "+
     "order by lists.id desc, refcount desc "+
     (islimit?"limit 1":""),
      [userid])
     return  (res.rowCount>0)?res.rows:[]
 
+   
+}
+
+//取得不是ref的清單
+async function get_all_list_not_ref(client, userid, islimit) {
+    let res = await client.query( 
+        "SELECT * FROM ( "+
+        "    select distinct on(lists.id) lists.id, listname, description, createtime,userid,ownercount,refcount,isref, "+
+        "    exists(select * from userlist t where t.listid = lists.id and t.userid = $1 and t.isref = false) as ismylist, "+
+        "    exists(select * from userlist t where t.listid = lists.id and t.userid = $1 and t.isref = true) as ismyref "+
+        "    FROM lists,userlist "+
+        "    where userlist.listid = lists.id and ispublic = true and isref = false ) userlistjoin "+
+        "    order by userlistjoin.refcount desc "+
+        (islimit?"limit 1":""),
+     [userid])
+    return  (res.rowCount>0)?res.rows:[]
+
+    
    
 }
 

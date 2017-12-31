@@ -287,7 +287,7 @@ async function user_create_a_list(client, userid, listname, description, ispubli
 }
 
 async function get_all_list_of_this_user(client, userid) {
-    let res = await client.query("select lists.id, listname, description, createtime, isref FROM userlist,lists where userlist.listid = lists.id and userid = $1 order by  isref , createtime desc",
+    let res = await client.query("select lists.id, listname, description, createtime, isref, refcount FROM userlist,lists where userlist.listid = lists.id and userid = $1 order by  isref , createtime desc",
      [userid])
     return  (res.rowCount>0)?res.rows:[]
 }

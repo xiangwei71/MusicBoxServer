@@ -1,0 +1,413 @@
+{
+	"info": {
+		"name": "musicbox Lists",
+		"_postman_id": "bf42e8c2-5c6d-e4da-c3cc-024893143e54",
+		"description": "",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "建立清單",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"userid\": \"Banana\",\n    \"listname\": \"兒歌\",\n    \"description\": \"...\",\n    \"ispublic\": true\n}"
+				},
+				"url": {
+					"raw": "http://localhost:3001/Lists/user_create_a_list/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"Lists",
+						"user_create_a_list",
+						""
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "ref此清單",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"userid\": \"Banana\",\n    \"listid\": 6\n}"
+				},
+				"url": {
+					"raw": "http://localhost:3001/Lists/user_ref_a_list/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"Lists",
+						"user_ref_a_list",
+						""
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "移除對此清單的ref",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"userid\": \"Mary\",\n    \"listid\": 6\n}"
+				},
+				"url": {
+					"raw": "http://localhost:3001/Lists/user_delete_a_ref_list/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"Lists",
+						"user_delete_a_ref_list",
+						""
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "移除所有對此清單的ref",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"listid\": 6\n}"
+				},
+				"url": {
+					"raw": "http://localhost:3001/Lists/user_delete_all_ref_list/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"Lists",
+						"user_delete_all_ref_list",
+						""
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "加入擁有者",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"userid\": \"Allie\",\n    \"listid\": 2\n}"
+				},
+				"url": {
+					"raw": "http://localhost:3001/Lists/user_add_a_list_owner/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"Lists",
+						"user_add_a_list_owner",
+						""
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "移除擁有者",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"userid\": \"Mary\",\n    \"listid\": 6\n}"
+				},
+				"url": {
+					"raw": "http://localhost:3001/Lists/user_remove_a_list_owner/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"Lists",
+						"user_remove_a_list_owner",
+						""
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "取得user所有清單",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"userid\": \"Banana\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:3001/Lists/get_all_list_of_this_user/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"Lists",
+						"get_all_list_of_this_user",
+						""
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "取得所有清單(排除user)",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"userid\": \"Marc\",\n\t\"islimit\": false\n}"
+				},
+				"url": {
+					"raw": "http://localhost:3001/Lists/get_all_list_exclude_this_user/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"Lists",
+						"get_all_list_exclude_this_user",
+						""
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "取得所有清單(實體)",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"userid\": \"Marc\",\n\t\"islimit\": false\n}"
+				},
+				"url": {
+					"raw": "http://localhost:3001/Lists/get_all_list_not_ref/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"Lists",
+						"get_all_list_not_ref",
+						""
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "取得擁有者",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"listid\": 2\n}"
+				},
+				"url": {
+					"raw": "http://localhost:3001/Lists/get_list_owner/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"Lists",
+						"get_list_owner",
+						""
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "取得ref",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"listid\": 2\n}"
+				},
+				"url": {
+					"raw": "http://localhost:3001/Lists/get_list_ref/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"Lists",
+						"get_list_ref",
+						""
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "是空的嗎",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"listid\": 2\n}"
+				},
+				"url": {
+					"raw": "http://localhost:3001/Lists/is_no_music_in_this_list/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"Lists",
+						"is_no_music_in_this_list",
+						""
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "刪除清單",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"userid\":\"Marc\",\n\t\"listid\": 2\n}"
+				},
+				"url": {
+					"raw": "http://localhost:3001/Lists/delete_user_list/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"Lists",
+						"delete_user_list",
+						""
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		}
+	]
+}

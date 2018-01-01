@@ -1,0 +1,413 @@
+{
+	"info": {
+		"name": "musicbox Musics",
+		"_postman_id": "9781a33a-0b75-c304-0ce3-bbd7451eb5ef",
+		"description": "",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "新增音樂",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"userid\":\"Marc\", \r\n    \"listid\":2, \r\n    \"musicname\":\"我才沒有愛你我們之間怎麼可能\", \r\n    \"description\":\"女歌手\", \r\n    \"ispublic\":true\r\n}"
+				},
+				"url": {
+					"raw": "http://localhost:3001/Musics/create_music/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"Musics",
+						"create_music",
+						""
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "ref此音樂",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"listid\":3, \r\n    \"musicid\":2\r\n}"
+				},
+				"url": {
+					"raw": "http://localhost:3001/Musics/user_ref_a_music/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"Musics",
+						"user_ref_a_music",
+						""
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "移除對此音樂的ref",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"listid\":3, \r\n    \"musicid\":2\r\n}"
+				},
+				"url": {
+					"raw": "http://localhost:3001/Musics/user_delete_a_ref_music/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"Musics",
+						"user_delete_a_ref_music",
+						""
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "移除對此音樂的所有ref",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"musicid\":5\r\n}"
+				},
+				"url": {
+					"raw": "http://localhost:3001/Musics/user_delete_all_ref_music/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"Musics",
+						"user_delete_all_ref_music",
+						""
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "加入作者",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"userid\":3, \r\n    \"musicid\":2\r\n}"
+				},
+				"url": {
+					"raw": "http://localhost:3001/Musics/user_add_a_music_owner/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"Musics",
+						"user_add_a_music_owner",
+						""
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "移除作者",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"userid\":3, \r\n    \"musicid\":2\r\n}"
+				},
+				"url": {
+					"raw": "http://localhost:3001/Musics/user_become_not_a_creator_of_music/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"Musics",
+						"user_become_not_a_creator_of_music",
+						""
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "清單音樂",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"listid\":2\r\n}"
+				},
+				"url": {
+					"raw": "http://localhost:3001/Musics/get_list_music_by_owner/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"Musics",
+						"get_list_music_by_owner",
+						""
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "清單音樂(別人看到的)",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"listid\":2\r\n}"
+				},
+				"url": {
+					"raw": "http://localhost:3001/Musics/get_list_music_by_viewer/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"Musics",
+						"get_list_music_by_viewer",
+						""
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "取得全部公開的音樂",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"userid\":\"Banana\",\r\n    \"islimit\":true\r\n}"
+				},
+				"url": {
+					"raw": "http://localhost:3001/Musics/get_all_public_musics/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"Musics",
+						"get_all_public_musics",
+						""
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "我創作的音樂",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"userid\":\"Mark\"\r\n}"
+				},
+				"url": {
+					"raw": "http://localhost:3001/Musics/get_all_music_I_creat/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"Musics",
+						"get_all_music_I_creat",
+						""
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "刪除音樂",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\t\"userid\":\"Marc\",\r\n    \"musicid\":9\r\n}"
+				},
+				"url": {
+					"raw": "http://localhost:3001/Musics/delete_music/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"Musics",
+						"delete_music",
+						""
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "取得作者",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"musicid\":2\r\n}"
+				},
+				"url": {
+					"raw": "http://localhost:3001/Musics/get_music_all_creator/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"Musics",
+						"get_music_all_creator",
+						""
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "取得ref",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"musicid\": 12\n}"
+				},
+				"url": {
+					"raw": "http://localhost:3001/Musics/get_music_ref/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"Musics",
+						"get_music_ref",
+						""
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		}
+	]
+}

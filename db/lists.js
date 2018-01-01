@@ -312,13 +312,13 @@ async function get_all_list_exclude_this_user(client, userid, islimit) {
 async function get_all_list_not_ref(client, userid, islimit) {
     let res = await client.query( 
         "SELECT * FROM ( "+
-        "    select distinct on(lists.id) lists.id, listname, description, createtime,userid,ownercount,refcount,isref, "+
+        "    select distinct on(lists.id) lists.id, listname, description, createtime,userid,ownercount,refcount, "+
         "    exists(select * from userlist t where t.listid = lists.id and t.userid = $1 and t.isref = false) as ismylist, "+
         "    exists(select * from userlist t where t.listid = lists.id and t.userid = $1 and t.isref = true) as ismyref "+
         "    FROM lists,userlist "+
         "    where userlist.listid = lists.id and ispublic = true and isref = false ) userlistjoin "+
         "    order by userlistjoin.refcount desc "+
-        (islimit?"limit 1":""),
+        (islimit?"limit 5":""),
      [userid])
     return  (res.rowCount>0)?res.rows:[]
 

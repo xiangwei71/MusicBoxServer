@@ -307,7 +307,7 @@ async function user_become_not_a_creator_of_music(client, userid, musicid, useTr
 }
 
 async function get_list_music_by_owner(client, listid) {
-    let res = await client.query("select listmusic.listid, listmusic.musicid, musicname, description, voterscount, averagestar, ownercount,refcount,createtime, isref FROM listmusic,musics where listmusic.musicid = musics.id and listmusic.listid = $1 order by isref, createtime desc",
+    let res = await client.query("select listmusic.musicid, musicname, description, voterscount, averagestar, ownercount,refcount,createtime, isref FROM listmusic,musics where listmusic.musicid = musics.id and listmusic.listid = $1 order by isref, createtime desc",
      [listid])
     return  (res.rowCount>0)?res.rows:[]
 }

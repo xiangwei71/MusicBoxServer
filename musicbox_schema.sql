@@ -1,3 +1,5 @@
+SET client_encoding = 'UTF8';
+
 CREATE TABLE lists (
    id serial primary key,
    listname character varying(50) NOT NULL,
@@ -76,6 +78,3 @@ CREATE TABLE listmusic (
 --   userid character varying(100) references users(userid),
 --   listid integer references lists(id)
 --);
-
-
-

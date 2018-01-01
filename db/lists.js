@@ -317,7 +317,7 @@ async function get_all_list_not_ref(client, userid, islimit) {
         "    exists(select * from userlist t where t.listid = lists.id and t.userid = $1 and t.isref = true) as ismyref "+
         "    FROM lists,userlist "+
         "    where userlist.listid = lists.id and ispublic = true and isref = false ) userlistjoin "+
-        "    order by userlistjoin.refcount desc "+
+        "    order by userlistjoin.refcount desc, userlistjoin.createtime desc "+
         (islimit?"limit 5":""),
      [userid])
     return  (res.rowCount>0)?res.rows:[]

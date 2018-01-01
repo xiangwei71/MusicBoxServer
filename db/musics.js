@@ -398,7 +398,7 @@ async function get_all_public_musics(client, userid, islimit){
         "from musics,usermusic "+
         "where musics.id = usermusic.musicid and ispublic = true "+
         "and (userid = $1 or (userid!=$1 and not exists (select * from usermusic t where t.musicid = musics.id and t.userid = $1))) "+
-        "order by refcount desc "+
+        "order by refcount desc , createtime desc "+
         (islimit?"limit 5":""),
      [userid])
     return  (res.rowCount>0)?res.rows:[]

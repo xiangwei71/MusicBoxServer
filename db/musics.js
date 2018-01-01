@@ -386,7 +386,9 @@ async function get_music_ref(client, musicid) {
 
 async function get_all_public_musics(client, userid, islimit){
     let res = await client.query(
-        "select musics.id,musicname,description,createtime,ownercount,refcount,averagestar,voterscount, userid = $1 as ismysong from musics,usermusic "+
+        "select musics.id,musicname,description,createtime,ownercount,refcount,averagestar,voterscount, userid = $1 as ismysong, "+
+        "( select string_agg(t.userid,',') from usermusic as t where t.musicid = musics.id ) as authors "+
+        "from musics,usermusic "+
         "where musics.id = usermusic.musicid and ispublic = true "+
         "and (userid = $1 or (userid!=$1 and not exists (select * from usermusic t where t.musicid = musics.id and t.userid = $1))) "+
         "order by musicid "+

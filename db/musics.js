@@ -318,7 +318,7 @@ async function get_list_music_by_owner(client, listid) {
 async function get_list_music_by_viewer(client, listid,userid) {
     let res = await client.query("select distinct on (musics.id) musics.id, musicname,description,voterscount,averagestar,createtime,ownercount,refcount, "+
     "exists(select t.id from usermusic t where t.musicid = musics.id and t.userid = $2) as ismymusic, "+
-    "exists (select * from listmusic t where t.musicid = musics.id and t.isref = true) as ismyref, "+
+    "exists (select * from listmusic as t,userlist as s where t.isref=true and musicid=musics.id and t.listid=s.listid and s.userid=$2) as ismyref, "+
     "( select string_agg(t.userid,',') from usermusic as t where t.musicid = musics.id ) as authors "+
     "from listmusic,musics, usermusic "+
     "where listmusic.musicid = musics.id and usermusic.musicid = musics.id and listmusic.listid = $1 and (ispublic = true or (ispublic = false and usermusic.userid = $2)) order by musics.id desc",

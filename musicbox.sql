@@ -435,6 +435,18 @@ COPY listmusic (id, listid, musicid, isref) FROM stdin;
 105	27	42	f
 106	2	42	t
 107	7	42	t
+108	24	43	f
+109	24	44	f
+110	5	45	f
+111	5	46	f
+112	5	47	f
+113	24	47	t
+114	5	48	f
+115	5	49	f
+116	5	44	t
+117	5	43	t
+118	3	45	t
+119	3	43	t
 \.
 
 
@@ -442,7 +454,7 @@ COPY listmusic (id, listid, musicid, isref) FROM stdin;
 -- Name: listmusic_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('listmusic_id_seq', 107, true);
+SELECT pg_catalog.setval('listmusic_id_seq', 119, true);
 
 
 --
@@ -485,7 +497,7 @@ COPY lists (id, listname, description, ispublic, refcount, createtime, ownercoun
 24	披頭四	...	t	0	2018-01-01 17:07:21.402285	1
 25	貓王	...	t	0	2018-01-01 17:07:29.473747	1
 26	宗教類	...	t	0	2018-01-01 17:07:38.809281	1
-27	嘻哈	...	t	0	2018-01-01 17:07:51.976034	1
+27	嘻哈	...	t	1	2018-01-01 17:07:51.976034	1
 \.
 
 
@@ -531,6 +543,13 @@ COPY musics (id, musicname, description, ispublic, createtime, ownercount, refco
 40	快樂頌	...	f	2018-01-01 20:27:37.780108	1	0	0	0	0
 41	天空之城	...	f	2018-01-01 20:28:33.24528	2	0	0	0	0
 42	我愛台妹	...	t	2018-01-01 20:50:42.122288	1	2	0	0	0
+48	oh	...	t	2018-01-02 10:38:42.11301	1	0	0	0	0
+49	吳克群	...	t	2018-01-02 10:38:53.726674	1	0	0	0	0
+46	一代宗師	...	t	2018-01-02 10:35:39.724578	1	0	0	0	0
+44	Mr. PostMan	...	t	2018-01-02 10:34:02.492016	1	1	0	0	0
+47	還是會	...	t	2018-01-02 10:35:58.99768	2	1	0	0	0
+45	笑傲江湖	...	t	2018-01-02 10:35:28.595941	1	1	0	0	0
+43	黃色潛水艇	...	t	2018-01-02 10:33:29.212113	1	2	0	0	0
 \.
 
 
@@ -538,7 +557,7 @@ COPY musics (id, musicname, description, ispublic, createtime, ownercount, refco
 -- Name: musics_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('musics_id_seq', 42, true);
+SELECT pg_catalog.setval('musics_id_seq', 49, true);
 
 
 --
@@ -609,6 +628,7 @@ COPY userlist (id, userid, listid, isref) FROM stdin;
 44	Allie	2	f
 47	Mary	2	f
 49	Mary	8	f
+91	Marc	27	t
 \.
 
 
@@ -616,7 +636,7 @@ COPY userlist (id, userid, listid, isref) FROM stdin;
 -- Name: userlist_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('userlist_id_seq', 90, true);
+SELECT pg_catalog.setval('userlist_id_seq', 91, true);
 
 
 --
@@ -661,6 +681,14 @@ COPY usermusic (id, userid, musicid) FROM stdin;
 69	Banana	41
 70	Marc	41
 71	Banana	42
+72	Banana	43
+73	Banana	44
+74	Allie	45
+75	Allie	46
+76	Allie	47
+77	Allie	48
+78	Allie	49
+79	Banana	47
 \.
 
 
@@ -668,7 +696,7 @@ COPY usermusic (id, userid, musicid) FROM stdin;
 -- Name: usermusic_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('usermusic_id_seq', 71, true);
+SELECT pg_catalog.setval('usermusic_id_seq', 79, true);
 
 
 --

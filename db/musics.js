@@ -63,16 +63,6 @@ router.post("/Musics/user_become_not_a_creator_of_music/",async (ctx,next)=>{
         })
 })
 
-router.post("/Musics/get_list_music_by_owner/",async (ctx,next)=>{
-    ctx.body =await db.OneResponse(
-        'NOT SUCCESS:get_list_music_by_owner',
-        async function(client){
-            let queryMap = ctx.request.body
-            return await get_list_music_by_owner(client, 
-                queryMap.listid)
-        })
-})
-
 router.post("/Musics/get_list_music_by_viewer/",async (ctx,next)=>{
     ctx.body =await db.OneResponse(
         'NOT SUCCESS:get_list_music_by_viewer',
@@ -304,15 +294,6 @@ async function user_become_not_a_creator_of_music(client, userid, musicid, useTr
         if(useTransaction)await client.query('ROLLBACK')
         throw e
     }
-}
-
-async function get_list_music_by_owner(client, listid) {
-    let res = await client.query(
-        "select listmusic.musicid, musicname, description, voterscount, averagestar, ownercount,refcount,createtime, isref, "+
-        "( select string_agg(t.userid,',') from usermusic as t where t.musicid = musics.id ) as authors "+
-        "FROM listmusic,musics where listmusic.musicid = musics.id and listmusic.listid = $1 order by isref, createtime desc",
-     [listid])
-    return  (res.rowCount>0)?res.rows:[]
 }
 
 async function get_list_music_by_viewer(client, listid,userid) {

@@ -204,38 +204,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"listid\":2\r\n}"
-				},
-				"url": {
-					"raw": "http://localhost:3001/Musics/get_list_music_by_owner/",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "3001",
-					"path": [
-						"Musics",
-						"get_list_music_by_owner",
-						""
-					]
-				},
-				"description": ""
-			},
-			"response": []
-		},
-		{
-			"name": "清單音樂(別人看到的)",
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/json"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"listid\":2\r\n}"
+					"raw": "{\r\n    \"listid\":4,\r\n    \"userid\":\"Marc\"\r\n}"
 				},
 				"url": {
 					"raw": "http://localhost:3001/Musics/get_list_music_by_viewer/",
